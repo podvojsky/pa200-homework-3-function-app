@@ -20,20 +20,18 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function ProcessNewsletter(queueItem: any, context: InvocationContext): Promise<void> {
-    context.log("Service Bus queue message received:", queueItem, typeof queueItem);
+    context.log("Service Bus queue message received:", queueItem);
 
     try {
         const emailData = typeof queueItem === "string" ? JSON.parse(queueItem) : queueItem;
         context.log(`Sending newsletter to: ${emailData.email}`);
-        context.log(`Subject: ${emailData.subject}`);
-        context.log(`Content: ${emailData.content}`);
 
         const info = await transporter.sendMail({
-            from: '"Newsletter" <newsletter@example.com>',
+            from: 'PA200 - HW3 - Newsletter <newsletter@example.com>',
             to: emailData.email,
-            subject: emailData.subject,
-            text: emailData.content,
-            html: `<p>${emailData.content}</p>`
+            subject: "test",
+            text: emailData.message,
+            html: `<p>${emailData.message}</p>`
         });
 
         context.log("✅ Email sent:", info.messageId);
