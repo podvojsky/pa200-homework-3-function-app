@@ -1,7 +1,7 @@
 import { app, InvocationContext } from "@azure/functions";
 
 export async function ProcessNewsletter(queueItem: any, context: InvocationContext): Promise<void> {
-    context.log("Service Bus queue message received:", queueItem);
+    context.log("Service Bus queue message received:", queueItem, typeof queueItem);
 
     const emailData = typeof queueItem === "string" ? JSON.parse(queueItem) : queueItem;
 
