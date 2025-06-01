@@ -29,7 +29,7 @@ export async function ProcessNewsletter(queueItem: any, context: InvocationConte
         context.log(`Content: ${emailData.content}`);
 
         const info = await transporter.sendMail({
-            from: '"Newsletter" <newsletter@example.com>',
+            from: 'pa200-hw-3@test.com',
             to: emailData.email,
             subject: emailData.subject,
             text: emailData.content,
