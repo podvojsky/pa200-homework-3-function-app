@@ -27,7 +27,7 @@ export async function ProcessNewsletter(queueItem: any, context: InvocationConte
         context.log(`Sending newsletter to: ${emailData.email}`);
 
         const info = await transporter.sendMail({
-            from: 'PA200 - HW3 - Newsletter <newsletter@example.com>',
+            from: '567780@mail.muni.cz',
             to: emailData.email,
             subject: "test",
             text: emailData.message,
