@@ -1,21 +1,21 @@
 import { app, InvocationContext } from "@azure/functions";
 import * as nodemailer from "nodemailer";
 
-const MAILTRAP_HOST = process.env.MAILTRAP_HOST;
-const MAILTRAP_PORT = Number(process.env.MAILTRAP_PORT || "2525");
-const MAILTRAP_USER = process.env.MAILTRAP_USER;
-const MAILTRAP_PASS = process.env.MAILTRAP_PASS;
+const MAIL_SERVICE_HOST = process.env.MAILTRAP_HOST;
+const MAIL_SERVICE_PORT = Number(process.env.MAILTRAP_PORT || "2525");
+const MAIL_SERVICE_USER = process.env.MAILTRAP_USER;
+const MAIL_SERVICE_PASS = process.env.MAILTRAP_PASS;
 
-if (!MAILTRAP_USER || !MAILTRAP_PASS) {
+if (!MAIL_SERVICE_USER || !MAIL_SERVICE_PASS) {
     throw new Error("Mailtrap credentials are not set in environment variables.");
 }
 
 const transporter = nodemailer.createTransport({
-    host: MAILTRAP_HOST,
-    port: MAILTRAP_PORT,
+    host: MAIL_SERVICE_HOST,
+    port: MAIL_SERVICE_PORT,
     auth: {
-        user: MAILTRAP_USER,
-        pass: MAILTRAP_PASS
+        user: MAIL_SERVICE_USER,
+        pass: MAIL_SERVICE_PASS
     }
 });
 
