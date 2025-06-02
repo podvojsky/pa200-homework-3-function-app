@@ -1,12 +1,23 @@
 import { app, InvocationContext } from "@azure/functions";
-import * as sgMail from "@sendgrid/mail";
+import * as nodemailer from "nodemailer";
 
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || "";
-if (!SENDGRID_API_KEY) {
-    throw new Error("SendGrid API key not set in environment variables.");
+const MAILTRAP_HOST = process.env.MAILTRAP_HOST;
+const MAILTRAP_PORT = Number(process.env.MAILTRAP_PORT || "2525");
+const MAILTRAP_USER = process.env.MAILTRAP_USER;
+const MAILTRAP_PASS = process.env.MAILTRAP_PASS;
+
+if (!MAILTRAP_USER || !MAILTRAP_PASS) {
+    throw new Error("Mailtrap credentials are not set in environment variables.");
 }
 
-sgMail.setApiKey(SENDGRID_API_KEY);
+const transporter = nodemailer.createTransport({
+    host: MAILTRAP_HOST,
+    port: MAILTRAP_PORT,
+    auth: {
+        user: MAILTRAP_USER,
+        pass: MAILTRAP_PASS
+    }
+});
 
 export async function ProcessNewsletter(queueItem: any, context: InvocationContext): Promise<void> {
     context.log("Service Bus queue message received:", queueItem);
@@ -15,26 +26,23 @@ export async function ProcessNewsletter(queueItem: any, context: InvocationConte
         const emailData = typeof queueItem === "string" ? JSON.parse(queueItem) : queueItem;
         context.log(`Sending newsletter to: ${emailData.email}`);
 
-        const msg = {
+        const info = await transporter.sendMail({
+            from: 'PA200 - HW3 - Newsletter <newsletter@example.com>',
             to: emailData.email,
-            from: "567780@mail.muni.cz", // Must be verified in SendGrid
-            subject: "PA200 - Newsletter",
+            subject: "test",
             text: emailData.message,
-            html: `<p>${emailData.message}</p>`,
-        };
+            html: `<p>${emailData.message}</p>`
+        });
 
-        await sgMail.send(msg);
-
-        context.log(`✅ Newsletter sent successfully to: ${emailData.email}`);
-
-    } catch (error: any) {
-        context.log("❌ Failed to send newsletter:", error);
-        throw error;  // So Azure Functions knows there was a failure
+        context.log("✅ Email sent:", info.messageId);
+    } catch (err: any) {
+        context.log("❌ Error sending email:", err);
+        throw err;
     }
 }
 
 app.serviceBusQueue("ProcessNewsletter", {
-    queueName: "newsletter-queue",               // your queue name
-    connection: "ServiceBusConnection",          // your connection string setting name
+    queueName: "newsletter-queue",
+    connection: "ServiceBusConnection",
     handler: ProcessNewsletter
 });
